@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-#coding:utf-8
+# coding:utf-8
 
 from hashlib import md5
 import urllib
@@ -10,11 +10,14 @@ import traceback
 import uuid
 import base64
 
+
 def to_deadline(rang):
     return int(time.time()) + rang
 
+
 def t16(t):
     return hex(t)[2:].lower()   # 16 进制小写形式
+
 
 def summd5(str):
     m = md5()
@@ -27,6 +30,7 @@ def sign(key, t, path):
     sign_part = "sign=" + sign_s + "&t=" + t
     return sign_part
 
+
 # p_url 不包含查询参数部分，带 scheme
 # p_query 不含问号 "?"
 def sign_url(key, t, p_url, p_query=""):
@@ -35,13 +39,11 @@ def sign_url(key, t, p_url, p_query=""):
     path = up.path
     sign_part = sign(key, t, path)
     if p_query:
-        query_part = "?" + p_query + "&"+ sign_part
+        query_part = "?" + p_query + "&" + sign_part
     else:
         query_part = "?" + sign_part
 
     return up.scheme + "://" + up.netloc + path + query_part
-
-
 # example:
 # url = "http://signt.qnssl.com/Dir1:2 3-_.!~*'();/?:@&=+$,#/视屏/音yue/test1234.mp4"
 # p_url 不包含查询参数部分，带 scheme
@@ -65,6 +67,7 @@ def sign_time(key, url, rang):
     deadline = to_deadline(rang)
     sign_deadline(key, url, deadline)
 
+
 def sign_deadline(key, url, deadline):
     print
     print("key: " + key)
@@ -76,6 +79,7 @@ def sign_deadline(key, url, deadline):
     signed_url = sign_url(key, t, url)
     print signed_url
     print
+
 
 def sign_expires(key, url, expires):
     print
@@ -89,6 +93,7 @@ def sign_expires(key, url, expires):
     print signed_url
     print
 
+
 def sign_check(key, signed_url):
     url = urllib.quote(signed_url.decode(sys.stdin.encoding).encode("utf8"), safe="-_.!~*'();/:@&=+$,?")
     u = urlparse(url)
@@ -100,12 +105,14 @@ def sign_check(key, signed_url):
     print(parse_qs(u.query)["sign"][0] == sign_s)
     print
 
+
 def show_t(t):
     i_t = int(t, 16)
     s_t = time.ctime(i_t)
     print
     print(t + " : " + str(i_t) + " : " + s_t)
     print
+
 
 def gen_key():
     print
@@ -130,5 +137,5 @@ try:
     else:
         signt_help()
 except Exception as e:
-    # print traceback.format_exc()
+    print traceback.format_exc()
     signt_help()
